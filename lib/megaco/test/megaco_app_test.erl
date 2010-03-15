@@ -87,8 +87,10 @@ is_app(App) ->
     case file:consult(File) of
 	{ok, [{application, App, AppFile}]} ->
 	    {ok, AppFile};
-	Error ->
-	    {error, {invalid_format, Error}}
+	{error, {LineNo, Mod, Code}} ->
+	    IoList = lists:concat([File, ":", LineNo, ": ",
+				   Mod:format_error(Code)]),
+	    {error, list_to_atom(lists:flatten(IoList))}
     end.
 
 
